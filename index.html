@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mink1i Customs - Конфигуратор</title>
+    <!-- Подключаем современный минималистичный шрифт Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+
+        /*TOAST-УВЕДОМЛЕНИЯ*/
+        .toast {
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 16px 24px;
+            border-radius: 8px;
+            border-left: 4px solid #22c55e; /* Зеленая полоска успеха */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideInRight 0.3s ease-out forwards;
+            transition: opacity 0.3s ease;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        body { 
+            /* Глубокий сине-серый градиент*/
+            background: linear-gradient(135deg, #1b2028 0%, #11141a 100%);
+            color: #e2e8f0; 
+            min-height: 100vh;
+            overflow-x: hidden; 
+            position: relative;
+        }
+
+        /* ШАПКА*/
+        header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 30px 50px; 
+            background: transparent;
+            position: absolute; top: 0; width: 100%; z-index: 100;
+        }
+        
+        .logo { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .logo-icon { 
+            width: 42px; height: 42px; border-radius: 8px;
+            border: 1.5px solid rgba(255,255,255,0.3); 
+            display: flex; justify-content: center; align-items: center; 
+            color: #f8fafc; font-size: 18px; 
+        }
+        .logo-text { 
+            font-size: 22px; font-weight: 600; color: #f8fafc; letter-spacing: 1px; line-height: 1; 
+        }
+        .logo-text span { 
+            font-size: 11px; display: block; letter-spacing: 3px; font-weight: 400; color: #94a3b8; margin-top: 3px;
+        }
+
+        nav { display: flex; gap: 35px; }
+        nav a { color: #94a3b8; text-decoration: none; font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        nav a:hover, nav a.active { color: #f8fafc; }
+
+        .user-actions { display: flex; gap: 20px; font-size: 18px; color: #94a3b8; align-items: center; }
+        .user-actions i { cursor: pointer; transition: 0.3s; }
+        .user-actions i:hover { color: #f8fafc; }
+        #user-panel { display: none; align-items: center; gap: 15px; font-size: 14px; }
+        #user-panel span { color: #94a3b8; font-weight: 400; }
+
+        /*КНОПКИ*/
+        /* Полупрозрачная кнопка (Начать сборку) */
+        .btn-outline { 
+            background: rgba(30, 41, 59, 0.5); 
+            border: 1px solid rgba(148, 163, 184, 0.2); 
+            color: #f8fafc; padding: 14px 28px; font-size: 13px; 
+            font-weight: 500; border-radius: 8px; cursor: pointer; 
+            text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s ease; 
+        }
+        .btn-outline:hover { 
+            background: rgba(30, 41, 59, 0.8); 
+            border-color: rgba(148, 163, 184, 0.4); 
+        }
+
+        /* Акцентная фиолетовая кнопка (Профиль, Сохранить) */
+        .btn-accent {
+            background: #6b5a8c;
+            border: 1px solid #7c68a3;
+            color: #f8fafc; padding: 10px 24px; font-size: 13px;
+            font-weight: 500; border-radius: 6px; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s ease;
+        }
+        .btn-accent:hover { background: #7c68a3; }
+
+        /* ГЛАВНЫЙ ЭКРАН*/
+        #main-view { 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            padding-top: 90px; /* Отступ под шапку */
+        }
+        .hero { display: flex; justify-content: space-between; align-items: center; padding: 0 10% 50px; }
+        .hero-text { max-width: 500px; }
+        .hero-text h1 { font-size: 48px; font-weight: 600; line-height: 1.1; margin-bottom: 25px; color: #f8fafc; }
+        .hero-text p { color: #94a3b8; margin-bottom: 40px; line-height: 1.6; font-size: 15px; font-weight: 300; }
+
+        .hero-image { width: 50%; display: flex; justify-content: center; position: relative; }
+        .single-hero-img { 
+            width: 100%; max-width: 550px; border-radius: 12px; 
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); 
+        }
+
+        /*КАРТОЧКИ (Главная)*/
+        .configurator-section { padding: 0 10% 40px; }
+        .section-title { font-size: 20px; margin-bottom: 30px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #f8fafc; }
+        .cards-grid { display: flex; gap: 15px; justify-content: space-between; }
+        .card { 
+            background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(255, 255, 255, 0.05); 
+            border-radius: 12px; padding: 30px 20px; width: 19%; 
+            text-align: center; cursor: pointer; transition: all 0.3s ease; 
+        }
+        .card:hover { 
+            background: rgba(30, 41, 59, 0.6); border-color: rgba(255, 255, 255, 0.1); 
+            transform: translateY(-4px); 
+        }
+        .card i { font-size: 28px; color: #cbd5e1; margin-bottom: 20px; }
+        .card h3 { font-size: 15px; margin-bottom: 8px; font-weight: 500; color: #f8fafc; }
+        .card p { font-size: 12px; color: #64748b; font-weight: 300; }
+
+        /*РАБОЧАЯ ЗОНА*/
+        #workspace { display: none; padding: 120px 10% 40px; }
+        .workspace-grid { display: flex; gap: 25px; margin-top: 20px; }
+        .preview-area { 
+            flex: 1; background: rgba(15, 23, 42, 0.4); 
+            border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; 
+            position: relative; height: 500px; display: flex; justify-content: center; align-items: center; 
+        }
+        
+        .controls-area { 
+            width: 420px;
+            background: rgba(30, 41, 59, 0.3); padding: 25px; 
+            border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); 
+            display: flex; flex-direction: column; 
+        }
+        .tabs { 
+            display: flex; justify-content: space-between; gap: 8px; 
+            margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; 
+        }        .tabs span { cursor: pointer; color: #64748b; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        .tabs span:hover { color: #cbd5e1; }
+        .tabs span.active { color: #f8fafc; border-bottom: 1px solid #f8fafc; padding-bottom: 16px; margin-bottom: -16px; }
+
+        .parts-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 5px; max-height: 300px; }
+        .part-card { 
+            background: rgba(15, 23, 42, 0.4); padding: 16px; border-radius: 8px; 
+            border: 1px solid rgba(255,255,255,0.03); cursor: pointer; 
+            display: flex; justify-content: space-between; align-items: center; transition: 0.2s;
+        }
+        .part-card:hover { background: rgba(30, 41, 59, 0.5); border-color: rgba(255,255,255,0.1); }
+        .part-card.selected { border-color: #6b5a8c; background: rgba(107, 90, 140, 0.15); }
+        
+        .price-summary { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); }
+
+        /*ПРОФИЛЬ*/
+        #profile-view { display: none; padding: 120px 10% 40px; }
+        
+       /* Стили для горизонтальной прокрутки (Карусель) */
+        .horizontal-scroll-container {
+            display: flex; 
+            gap: 20px; 
+            overflow-x: auto; 
+            padding-bottom: 15px; 
+            padding-top: 10px;
+            margin-top: -10px; 
+            flex-wrap: nowrap !important; 
+            scrollbar-width: thin; 
+            scrollbar-color: #6b5a8c transparent;
+        }
+        /* Делаем ползунок чуть толще, чтобы мышкой было удобнее хватать на ПК */
+        .horizontal-scroll-container::-webkit-scrollbar { height: 8px; }
+        .horizontal-scroll-container::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.3); border-radius: 10px; }
+        .horizontal-scroll-container::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        .horizontal-scroll-container::-webkit-scrollbar-thumb:hover { background: #6b5a8c; }
+
+        .build-card { 
+            background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(255,255,255,0.05); 
+            border-radius: 12px; padding: 25px; 
+            width: 320px; /* Фиксированная ширина для карусели */
+            flex-shrink: 0; /* Запрещаем карточкам сжиматься */
+            transition: 0.3s;
+        }
+        .build-card:hover { border-color: #6b5a8c; transform: translateY(-3px); }
+        .build-card h4 { color: #f8fafc; margin-bottom: 15px; font-size: 16px; font-weight: 500;}
+        .build-card p { font-size: 13px; color: #94a3b8; margin-bottom: 8px; font-weight: 300; }
+        .build-card hr { border-color: rgba(255,255,255,0.05); margin: 15px 0; border-style: solid; border-bottom: none; }
+        /*МОДАЛКА*/
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-box { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px rgba(0,0,0,0.5); border-radius: 16px; padding: 40px; width: 380px; text-align: center; }
+        .modal-box input { width: 100%; padding: 14px; margin-bottom: 15px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s;}
+        .modal-box input:focus { border-color: #6b5a8c; }
+        .modal-tabs span { cursor: pointer; margin: 0 10px; color: #64748b; font-weight: 500; padding-bottom: 5px; font-size: 14px; }
+        .modal-tabs span.active { color: #f8fafc; border-bottom: 2px solid #6b5a8c; }
+        
+        /* Кастомный скроллбар для минимализма */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /*ПЕРЕКЛЮЧАТЕЛЬ РАЗМЕРА*/
+        .size-selector { 
+            display: flex; gap: 5px; background: rgba(15, 23, 42, 0.4); 
+            padding: 5px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .btn-size {
+            background: transparent; border: none; color: #94a3b8;
+            padding: 8px 20px; border-radius: 6px; cursor: pointer;
+            font-size: 13px; font-weight: 600; transition: 0.3s;
+        }
+        .btn-size:hover { color: #f8fafc; }
+        .btn-size.active { background: #6b5a8c; color: #f8fafc; }
+
+        /* Класс для выравнивания меню на ПК */
+        .menu-wrapper { display: flex; flex: 1; justify-content: space-between; align-items: center; margin-left: 40px; }
+
+        /*КАСТОМНЫЕ ЧЕКБОКСЫ И СЕЛЕКТОРЫ*/
+        .cart-item-cb { 
+            appearance: none; -webkit-appearance: none; width: 22px; height: 22px; 
+            border: 2px solid #6b5a8c; border-radius: 6px; background: transparent; 
+            cursor: pointer; position: relative; flex-shrink: 0; transition: 0.2s; 
+        }
+        .cart-item-cb:checked { background: #6b5a8c; }
+        .cart-item-cb:checked::after { 
+            content: '✔'; color: white; position: absolute; 
+            top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 14px; 
+        }
+
+        select#brush-material { 
+            appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); 
+            background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; 
+        }
+        select#brush-material option { background: #1e293b; color: #f8fafc; padding: 10px; }
+
+        /*ДВУХКОЛОНОЧНАЯ КОРЗИНА И КЛИКАБЕЛЬНЫЕ ТОВАРЫ*/
+        #cart-view { 
+            height: 100vh; 
+            overflow: hidden; 
+            display: none; 
+            flex-direction: column; 
+            padding: 100px 5% 30px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            width: 100%; 
+            box-sizing: border-box; 
+        }
+        #cart-view h2 { margin-bottom: 20px; flex-shrink: 0; font-size: 28px; }
+        
+        .cart-layout { display: flex; gap: 30px; flex: 1; overflow: hidden; align-items: flex-start; }
+        
+        /* Колонка товаров занимает всё место и листается внутри себя */
+        .cart-items-column { 
+            flex-grow: 1; height: 100%; overflow-y: auto; padding-right: 15px; 
+            padding-top: 4px; padding-bottom: 20px; /* Фикс срезанной верхушки */
+            display: flex; flex-direction: column; gap: 12px; width: 100%; 
+        }
+        .cart-items-column::-webkit-scrollbar { width: 6px; }
+        .cart-items-column::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        /* Панель оплаты жестко зафиксирована справа */
+        .cart-summary-column { 
+            width: 320px; flex-shrink: 0; background: rgba(30, 41, 59, 0.4); 
+            padding: 25px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); 
+        }
+
+        .cart-item-card {
+            display: flex; justify-content: space-between; align-items: center; padding: 20px; 
+            background: rgba(30, 41, 59, 0.4); border-radius: 12px; border: 1px solid rgba(255,255,255,0.02);
+            cursor: pointer; transition: all 0.2s ease; width: 100%; flex-shrink: 0;
+        }
+        .cart-item-card:hover { border-color: rgba(107, 90, 140, 0.5); }
+        .cart-item-card.selected { background: rgba(107, 90, 140, 0.15); border-color: #6b5a8c; }
+        
+        .cart-item-card .item-info { flex: 1; min-width: 0; padding-right: 15px; } 
+        .cart-item-card h4 { color: #f8fafc; margin-bottom: 6px; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .btn-delete { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .btn-delete:hover { background: #ef4444; color: white; }
+
+
+        /* АДАПТИВ ПОД ТЕЛЕФОНЫ*/
+        @media (max-width: 768px) {
+            /* Убираем лишние отступы, чтобы поднять фото в самый верх */
+            #main-view { padding-top: 70px; }
+            .hero { padding: 0 5% 10px; display: flex; flex-direction: column; align-items: center; }
+            .hero-image { order: 1; width: 90%; max-height: 170px; object-fit: contain; margin-bottom: 20px; display: flex !important; }
+            
+            /* Текст и увеличенная кнопка */
+            .hero-text { order: 2; text-align: center; margin-bottom: 5px; width: 100%; }
+            .hero-text h1 { font-size: 26px; margin-bottom: 10px; }
+            .hero-text p { font-size: 12px; margin-bottom: 20px; line-height: 1.4; }
+            .hero-text .btn-outline { padding: 16px 24px; font-size: 14px; width: 100%; font-weight: 600; border-radius: 10px; }
+            
+            /* Компактные кнопки конструктора */
+            .configurator-section { display: block !important; padding: 15px 5% 20px; }
+            .section-title { display: none; } 
+            .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .card { width: 100%; padding: 12px; margin: 0; }
+            .card i { font-size: 18px; margin-bottom: 5px; }
+            .card h3 { font-size: 12px; margin-bottom: 3px; }
+            .card p { font-size: 10px; line-height: 1.1; }
+
+            /* Шапка */
+            header { 
+                position: fixed !important; top: 0; left: 0; width: 100%; z-index: 1000; 
+                padding: 12px 20px; justify-content: space-between; align-items: center; background: #11141a; 
+            }
+            #mobile-menu-btn { display: block !important; order: 1; }
+            .logo { order: 2; margin: 0 auto; padding-right: 24px; }
+            
+            /* Бургер-меню */
+            .menu-wrapper {
+                display: flex !important; 
+                position: fixed; top: 60px; left: -100%; 
+                width: 250px; height: calc(100vh - 60px);
+                background: rgba(17, 20, 26, 0.98); flex-direction: column; padding: 25px; 
+                z-index: 999; align-items: flex-start; border-right: 1px solid rgba(255,255,255,0.05);
+                transition: left 0.3s ease-in-out;
+                margin-left: 0; 
+            }
+            .menu-wrapper.active { left: 0; } 
+            
+            nav { flex-direction: column; width: 100%; gap: 18px; font-size: 16px; margin-bottom: 30px; align-items: flex-start; }
+            .user-actions { flex-direction: column; width: 100%; align-items: flex-start; gap: 20px; }
+            #user-panel { flex-direction: column; align-items: flex-start; gap: 15px; }
+            #user-panel .btn-accent { padding: 8px 16px; font-size: 12px; }
+
+            /*Рабочая зона и 3D-модель*/
+            #workspace { 
+                flex-direction: column !important; /* Строго выстраиваем блоки сверху вниз */
+                padding: 90px 5% 40px !important; 
+                height: auto !important; 
+            }
+            
+            /* На всякий случай выравниваем заголовок и кнопки размера на узких экранах */
+            #workspace > div:first-child { flex-wrap: wrap; gap: 10px; justify-content: center !important; text-align: center; }
+
+            .workspace-grid { 
+                display: flex; 
+                flex-direction: column; 
+                width: 100%; 
+                gap: 15px; 
+                margin-top: 15px; 
+            }
+            .preview-area { 
+                height: 350px !important; 
+                min-height: 300px !important; 
+                width: 100% !important; 
+            } 
+            .controls-area { 
+                width: 100%; 
+                padding: 15px; 
+            }
+            
+            select#brush-material { padding: 10px; font-size: 13px; height: auto; }
+
+            /* 7. Корзина*/
+            #cart-view { 
+                padding: 70px 0 0 0 !important; /* Убираем боковые отступы у контейнера */
+            }
+            #cart-view h2 { padding: 0 20px; margin-bottom: 15px !important; font-size: 22px; }
+            
+            .cart-layout { display: flex; flex-direction: column; gap: 0; flex: 1; overflow: hidden; margin: 0; }
+            /* Колонка товаров занимает всё место и листается внутри себя */
+            .cart-items-column { 
+                flex-grow: 1; height: 100%; overflow-y: auto; 
+                padding: 4px 15px 20px; /*Безопасные отступы по краям */
+                display: flex; flex-direction: column; gap: 12px; width: 100%; 
+                justify-content: flex-start; box-sizing: border-box; 
+            }
+            
+            /* Панель оплаты растягивается ровно на 100% ширины */
+            .cart-summary-column { 
+                width: 100%; flex-shrink: 0; 
+                background: #1e293b; padding: 20px 20px 25px; 
+                border-top: 1px solid rgba(255,255,255,0.1); border-radius: 20px 20px 0 0; 
+                margin: 0; box-shadow: 0 -10px 20px rgba(0,0,0,0.3); 
+                border-left: none; border-right: none; border-bottom: none; 
+            }
+            .cart-summary-column h3 { font-size: 16px !important; margin-bottom: 10px !important; }
+            .cart-summary-column button { padding: 14px !important; }
+        
+        }
+
+    </style>
+
+    <!-- Карта импортов для 3D-моделей -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.150.1/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.150.1/examples/jsm/"
+        }
+      }
+    </script>
+</head>
+<body>
+
+    <!-- ШАПКА -->
+    <header id="main-header">
+        <!-- Кнопка мобильного меню (слева) -->
+        <i class="fa-solid fa-bars" id="mobile-menu-btn" onclick="toggleMobileMenu()" style="display: none; font-size: 24px; color: #f8fafc; cursor: pointer;"></i>
+        
+        <div class="logo" onclick="goHome()">
+            <div class="logo-icon"><i class="fa-solid fa-cube"></i></div>
+            <div class="logo-text">MINK1I<span>CUSTOMS</span></div>
+        </div>
+        
+        <!-- Контейнер для навигации и профиля -->
+        <div id="menu-container" class="menu-wrapper">
+            <nav>
+                <a href="#" id="nav-home" onclick="goHome()" class="active">Главная</a>
+                <a href="#" id="nav-config" onclick="startConfigurator()">Конструктор</a>
+                <a href="#" id="nav-about" onclick="showAbout()">О нас</a>
+                <a href="#" id="nav-cart" onclick="showCartView()">КОРЗИНА (<span id="cart-counter">0</span>)</a>
+            </nav>
+            <div class="user-actions">
+                <i class="fa-solid fa-user" id="login-btn" title="Вход" onclick="openModal()"></i>
+                <div id="user-panel">
+                    <span id="username-display"></span>
+                    <button class="btn-accent" onclick="showProfile()">Профиль</button>
+                    <i class="fa-solid fa-right-from-bracket" title="Выйти" onclick="logout()" style="color: #64748b; margin-left: 10px;"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ГЛАВНАЯ СТРАНИЦА -->
+    <main id="main-view">
+        <section class="hero">
+            <div class="hero-text">
+                <h1>СОЗДАЙ СВОЙ<br>ИДЕАЛЬНЫЙ ТАЙПИНГ</h1>
+                <p>Эксклюзивные компоненты и безграничные возможности для сборки клавиатуры твоей мечты прямо в браузере.</p>
+                <button class="btn-outline" onclick="startConfigurator()">Начать сборку</button>
+            </div>
+            <div class="hero-image">
+                <img src="images/hero-keyboard.jpg" alt="Custom Keyboard" class="single-hero-img">
+            </div>
+        </section>
+
+        <section class="configurator-section">
+            <h2 class="section-title">Конструктор</h2>
+            <div class="cards-grid">
+                <div class="card" onclick="startConfigurator()"><i class="fa-solid fa-keyboard"></i><h3>Корпус</h3></div>
+                <div class="card" onclick="startConfigurator()"><i class="fa-solid fa-microchip"></i><h3>Свитчи</h3></div>
+                <div class="card" onclick="startConfigurator()"><i class="fa-solid fa-border-all"></i><h3>Кейкапы</h3></div>
+                <div class="card" onclick="startConfigurator()"><i class="fa-solid fa-palette"></i><h3>Расцветка</h3></div>
+                <div class="card" onclick="startConfigurator()"><i class="fa-solid fa-wrench"></i><h3>Моддинг</h3></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- РАБОЧАЯ ЗОНА -->
+    <div id="workspace" style="display: none; padding: 120px 10% 40px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="color: #f8fafc; font-size: 22px; font-weight: 600;">Режим сборки</h2>
+            
+            <!-- Блок выбора размера -->
+            <div class="size-selector">
+                <button id="size-100" class="btn-size active" onclick="changeSize('100%', 'key100.gltf')">100% (Full)</button>
+                <button id="size-75" class="btn-size" onclick="changeSize('75%', 'key75.gltf')">75% (Compact)</button>
+                <button id="size-60" class="btn-size" onclick="changeSize('60%', 'key60.gltf')">60% (Mini)</button>
+            </div>
+            
+        </div>
+        
+        <div class="workspace-grid">
+            <div class="preview-area" id="preview-container">
+                <!-- Сюда script.js вставит 3D сцену -->
+            </div>
+            <div class="controls-area">
+                <div class="tabs">
+                    <span id="tab-frames" class="active" onclick="loadParts('frames')">Рамка</span>
+                    <span id="tab-cases" onclick="loadParts('cases')">Дно</span>
+                    <span id="tab-pcbs" onclick="loadParts('pcbs')">Плата</span>
+                    <span id="tab-switches" onclick="loadParts('switches')">Свитчи</span>
+                    <span id="tab-keycaps" onclick="loadParts('keycaps')">Кейкапы</span>
+                    <span id="tab-custom" onclick="loadCustomPaintTab()" style="color: #c084fc;">Кастом</span>
+                </div>
+                
+                <!-- Стандартный список деталей (из базы) -->
+                <div class="parts-list" id="parts-list"></div>
+                
+                <!-- Инструменты ручной покраски -->
+                <div id="custom-paint-panel" style="display: none; flex: 1; flex-direction: column;">
+                    <p style="color: #94a3b8; font-size: 13px; margin-bottom: 15px; line-height: 1.5;">
+                        <i class="fa-solid fa-paintbrush"></i> Выберите цвет и материал, затем кликайте по клавишам на 3D-модели.
+                    </p>
+                    
+                    <!-- КИСТЬ / ЛАСТИК -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <button id="tool-brush" class="btn-accent" style="flex: 1; padding: 10px; font-size: 12px;" onclick="setCustomTool('brush')">🖌 Кисть</button>
+                        <button id="tool-eraser" class="btn-outline" style="flex: 1; padding: 10px; font-size: 12px;" onclick="setCustomTool('eraser')">🧼 Ластик</button>
+                    </div>
+                    
+                    <label style="color: #e2e8f0; font-size: 13px; margin-bottom: 8px;">Цвет кисти:</label>
+                    <input type="color" id="brush-color" value="#ff0055" style="width: 100%; height: 50px; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 20px; background: transparent; padding: 0;">
+                    
+                    <label style="color: #e2e8f0; font-size: 13px; margin-bottom: 8px;">Эффект (Материал):</label>
+                    <select id="brush-material" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; margin-bottom: 25px; outline: none; font-size: 13px;">
+                        <option value="matte">Матовый пластик (PBT)</option>
+                        <option value="glossy">Глянцевый пластик (ABS)</option>
+                        <option value="metal">Анодированный алюминий</option>
+                        <option value="chrome">Полированный хром (Зеркало)</option>
+                    </select>
+                    
+                    <button class="btn-outline" style="width: 100%; padding: 12px; font-size: 12px; margin-top: auto;" onclick="resetCustomPaint()">Сбросить ручную покраску</button>
+                </div>
+                
+                <div class="price-summary">
+                    <h3 style="display: flex; justify-content: space-between; font-size: 15px; color: #cbd5e1; font-weight: 500;">
+                        Итого: <span id="total-price" style="color: #f8fafc;">0 ₽</span>
+                    </h3>
+                    
+                    <!-- Полный сброс сборки -->
+                    <button class="btn-outline" style="width: 100%; margin-top: 15px; padding: 10px; font-size: 13px; border-color: rgba(239, 68, 68, 0.3); color: #ef4444; transition: 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.1)'" onmouseout="this.style.background='rgba(30, 41, 59, 0.5)'" onclick="resetFullBuild()">
+                        <i class="fa-solid fa-rotate-right"></i> Сбросить сборку
+                    </button>
+                    
+                    <!-- Кнопка сохранения в профиль -->
+                    <button class="btn-outline" style="width: 100%; margin-top: 10px; padding: 10px; font-size: 13px;" onclick="saveBuild()">
+                        Сохранить в профиль
+                    </button>
+                    
+                    <!-- Кнопка Добавить в корзину... -->
+                    <button class="btn-accent" style="width: 100%; margin-top: 10px; padding: 14px; background: #22c55e; border: none; color: white; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#16a34a'" onmouseout="this.style.background='#22c55e'" onclick="addToCart()">
+                        Добавить в корзину
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПРОФИЛЬ -->
+    <div id="profile-view">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h2 style="color: #f8fafc; font-size: 24px; font-weight: 600;">ПРОФИЛЬ: <span id="profile-username" style="color: #94a3b8; font-weight: 400;"></span></h2>
+        </div>
+        
+        <h3 style="margin-bottom: 20px; font-size: 16px; color: #cbd5e1; font-weight: 500;">Ваши сохраненные сборки:</h3>
+        <div id="builds-container" class="horizontal-scroll-container"></div>
+        
+        <h3 style="margin: 40px 0 20px; font-size: 16px; color: #cbd5e1; font-weight: 500;">История покупок:</h3>
+        <div id="orders-container" class="horizontal-scroll-container"></div>
+    </div>
+
+    <!--КОРЗИНА -->
+    <div id="cart-view" style="display: none; max-width: 1100px; margin: 0 auto; padding: 120px 20px 60px; color: white; width: 100%;">
+        <h2 style="font-size: 28px; margin-bottom: 30px; font-weight: 600;">Ваша корзина</h2>
+        
+        <div class="cart-layout">
+            <div id="cart-container" class="cart-items-column">
+                <!-- Товары -->
+            </div>
+            
+            <div class="cart-summary-column">
+                <h3 style="font-size: 18px; color: #f8fafc; margin-bottom: 20px; font-weight: 500;">Детали заказа</h3>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; color: #94a3b8; font-size: 13px;">
+                    <span>Выбрано товаров:</span>
+                    <span id="cart-items-count">0 шт.</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 25px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+                    <span style="font-size: 16px; color: #f8fafc; font-weight: 500;">К оплате:</span>
+                    <span id="cart-total" style="font-size: 22px; color: #c084fc; font-weight: 700;">0 ₽</span>
+                </div>
+                <button class="btn-accent" style="width: 100%; padding: 14px; font-size: 13px; font-weight: 600;" onclick="checkout()">ОФОРМИТЬ ЗАКАЗ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- О НАС -->
+    <div id="about-view" style="display: none; padding: 140px 10% 60px; max-width: 1000px; margin: 0 auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+            <h2 style="color: #f8fafc; font-size: 28px; font-weight: 600; letter-spacing: -0.5px;">О ПРОЕКТЕ MINK1I CUSTOMS</h2>
+        </div>
+        
+        <div style="background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 40px; line-height: 1.7; color: #94a3b8; font-weight: 300;">
+            <p style="font-size: 16px; color: #f8fafc; margin-bottom: 20px; font-weight: 400;">
+                Мы создали <strong style="color: #f8fafc; font-weight: 500;">Mink1i Customs</strong> не просто как инструмент для выбора комплектующих, а как цифровую экосистему для ценителей идеального эстетичного тайпинга.
+            </p>
+            <p style="margin-bottom: 20px;">
+                Современная клавиатура — это давно не просто периферия. Это элемент рабочего пространства, отражающий индивидуальность владельца. Наша платформа объединяет в себе интерактивную 3D-визуализацию в реальном времени, строгую систему проверки совместимости компонентов (от пинов платы до форматов корпусов) и возможность сохранять историю сборок в один клик.
+            </p>
+            <div style="display: flex; gap: 30px; margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05);">
+                <div>
+                    <h4 style="color: #f8fafc; font-size: 16px; margin-bottom: 8px; font-weight: 500;">Премиум-материалы</h4>
+                    <p style="font-size: 13px;">Точная передача текстур анодированного алюминия, латуни, матового пластика и поликарбоната.</p>
+                </div>
+                <div>
+                    <h4 style="color: #f8fafc; font-size: 16px; margin-bottom: 8px; font-weight: 500;">Умная совместимость</h4>
+                    <p style="font-size: 13px;">Исключение ошибок при сборке: система сама подберет подходящие под размер платы и свитчи.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛКА АВТОРИЗАЦИИ -->
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal-box">
+            <div class="modal-tabs" style="margin-bottom: 25px;">
+                <span id="tab-login" class="active" onclick="switchTab('login')">ВХОД</span>
+                <span id="tab-register" onclick="switchTab('register')">РЕГИСТРАЦИЯ</span>
+            </div>
+            <input type="text" id="auth-login" placeholder="Логин">
+            <input type="password" id="auth-pass" placeholder="Пароль">
+            <button class="btn-accent" id="auth-submit-btn" style="width: 100%; margin-top: 10px; padding: 14px;" onclick="submitAuth()">Войти</button>
+            <button onclick="closeModal()" style="margin-top: 15px; background: none; border: none; color: #64748b; cursor: pointer; font-size: 13px;">Отмена</button>
+        </div>
+    </div>
+
+    <!-- ОСНОВНАЯ ЛОГИКА ИНТЕРФЕЙСА -->
+    <script>
+        let currentBuild = { frame: null, case: null, pcb: null, switches: null, keycap: null };
+        let currentSize = '100%'; 
+        let currentCategory = 'frames'; 
+        let profileBuilds = []; // ПЕРЕМЕННАЯ ДЛЯ ХРАНЕНИЯ СБОРОК ИЗ БАЗЫ
+
+        // Управление меню
+        function toggleMobileMenu() {
+            document.getElementById('menu-container').classList.toggle('active');
+        }
+        function closeMobileMenu() {
+            document.getElementById('menu-container').classList.remove('active');
+        }
+
+        // Умная функция скрытия всех экранов
+        function hideAllViews() {
+            document.getElementById('main-view').style.display = 'none';
+            document.getElementById('workspace').style.display = 'none';
+            document.getElementById('profile-view').style.display = 'none';
+            document.getElementById('about-view').style.display = 'none';
+            document.getElementById('cart-view').style.display = 'none'; 
+            document.querySelectorAll('nav span, nav a').forEach(el => el.classList.remove('active'));
+        }
+
+        // Навигация
+        function goHome() {
+            closeMobileMenu();
+            hideAllViews();
+            document.getElementById('main-view').style.display = 'block';
+            document.getElementById('nav-home').classList.add('active');
+        }
+
+        function showAbout() {
+            closeMobileMenu();
+            hideAllViews();
+            document.getElementById('about-view').style.display = 'block'; 
+            document.getElementById('nav-about').classList.add('active');
+        }
+
+        function showCartView() {
+            closeMobileMenu();
+            hideAllViews(); 
+            document.getElementById('cart-view').style.display = 'flex'; 
+            document.getElementById('nav-cart').classList.add('active');
+            
+            const container = document.getElementById('cart-container');
+            
+            if (cart.length === 0) {
+                container.style.alignItems = 'center'; 
+                container.style.justifyContent = 'center'; 
+                container.innerHTML = '<p style="color: #94a3b8; font-size: 16px; margin: auto;">Корзина пуста.</p>';
+                document.getElementById('cart-total').innerText = '0 ₽';
+                if(document.getElementById('cart-items-count')) document.getElementById('cart-items-count').innerText = '0 шт.';
+                return;
+            }
+
+            container.style.alignItems = 'stretch';
+            container.style.justifyContent = 'flex-start'; 
+            
+            // Кнопка "Выбрать все"
+            const allSelected = cart.every(item => item.selected);
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 5px;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #e2e8f0; font-size: 14px; font-weight: 500;">
+                        <input type="checkbox" class="cart-item-cb" ${allSelected ? 'checked' : ''} onchange="toggleAllCartItems(this.checked)" style="width: 18px; height: 18px;">
+                        Выбрать все
+                    </label>
+                </div>
+            `;
+            
+            cart.forEach((item, index) => {
+                if (item.selected === undefined) item.selected = true; 
+                const isChecked = item.selected ? 'checked' : '';
+                const selectedClass = item.selected ? 'selected' : '';
+                
+                // Детальное описание товаров
+                const partsStr = `
+                    <span style="display:block; margin-top: 6px;"><b>Рамка:</b> ${item.build.frame?.name || 'Не выбрана'}</span>
+                    <span style="display:block; margin-top: 3px;"><b>Дно:</b> ${item.build.case?.name || 'Не выбрано'}</span>
+                    <span style="display:block; margin-top: 3px;"><b>Плата:</b> ${item.build.pcb?.name || 'Не выбрана'}</span>
+                    <span style="display:block; margin-top: 3px;"><b>Свитчи:</b> ${item.build.switches?.name || 'Не выбраны'}</span>
+                    <span style="display:block; margin-top: 3px;"><b>Кейкапы:</b> ${item.build.keycap?.name || 'Не выбраны'}</span>
+                `;
+                
+                container.innerHTML += `
+                    <div class="cart-item-card ${selectedClass}" style="align-items: flex-start;" onclick="toggleCartItem(${index})">
+                        <div style="display: flex; align-items: flex-start; gap: 15px; flex: 1; min-width: 0;">
+                            
+                            <!-- Зона чекбокса -->
+                            <div style="display: flex; align-items: center; justify-content: center; height: 30px; padding-right: 5px;">
+                                <input type="checkbox" class="cart-item-cb" ${isChecked} style="pointer-events: none;">
+                            </div>
+                            
+                            <div style="flex: 1; min-width: 0;">
+                                <!-- Зона текста: Клик только по названию загружает 3D-модель -->
+                                <h4 onclick="event.stopPropagation(); loadBuildFromCart(${index})" title="Нажмите, чтобы посмотреть в конфигураторе" style="color: #f8fafc; margin-bottom: 4px; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: 0.2s; cursor: pointer; display: inline-block;" onmouseover="this.style.color='#c084fc'" onmouseout="this.style.color='#f8fafc'">
+                                    ${item.name} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 11px; margin-left: 5px; color: #64748b;"></i>
+                                </h4>
+                                
+                                <!-- Описание товара больше не кликабельно для 3D, клик уйдет в карточку для галочки -->
+                                <div style="font-size: 11px; color: #94a3b8; margin: 0; line-height: 1.4;">
+                                    ${item.isCustom ? '<span style="color:#c084fc; font-weight:bold;">🎨 Кастомная покраска</span>' : ''}
+                                    ${partsStr}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 15px;">
+                            <button class="btn-delete" onclick="event.stopPropagation(); deleteCartItem(${index})" title="Удалить товар" style="padding: 8px 12px; background: transparent; border: none; font-size: 16px;"><i class="fa-solid fa-trash"></i></button>
+                            <div style="font-weight: bold; color: #f8fafc; font-size: 16px; white-space: nowrap;">${item.price} ₽</div>
+                        </div>
+                    </div>
+                `;
+            });
+            updateCartTotal();
+        }
+
+        // Восстановление 3D-Моделей 
+        function startConfigurator() {
+            closeMobileMenu(); 
+            hideAllViews();
+            
+            // На телефоне включаем flex (чтобы элементы встали в столбик), на ПК - block
+            document.getElementById('workspace').style.display = window.innerWidth <= 768 ? 'flex' : 'block';
+            document.getElementById('nav-config').classList.add('active');
+
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+                if (window.applyCurrentColors) window.applyCurrentColors();
+            }, 150);
+            
+            if (!currentCategory) currentCategory = 'frames';
+            loadParts(currentCategory);
+        }
+
+        // Выбор размера
+        function changeSize(size, modelFile) {
+            currentSize = size;
+            
+            document.getElementById('size-100').classList.toggle('active', size === '100%');
+            document.getElementById('size-75').classList.toggle('active', size === '75%');
+            document.getElementById('size-60').classList.toggle('active', size === '60%');
+            
+            const tabFrames = document.getElementById('tab-frames');
+            if (size === '60%') {
+                tabFrames.style.display = 'none'; 
+                if (currentCategory === 'frames' || currentCategory === 'custom') currentCategory = 'cases'; 
+            } else {
+                tabFrames.style.display = 'inline-block';
+                tabFrames.innerText = size === '75%' ? 'Колесико' : 'Рамка';
+                if (currentCategory === 'custom') currentCategory = 'frames';
+            }
+            
+            //Полный сброс всех деталей и краски при смене размера
+            currentBuild = { frame: null, case: null, pcb: null, switches: null, keycap: null };
+            hasCustomPaint = false;
+            if (window.keyboardModel && typeof resetCustomPaint === 'function') resetCustomPaint();
+            
+            updateTotalPrice();
+            window.loadModel(modelFile);
+            loadParts(currentCategory);
+        }
+
+        function selectPart(category, part) {
+            const key = category === 'cases' ? 'case' : category === 'switches' ? 'switches' : category.slice(0, -1);
+            currentBuild[key] = part;
+
+            //Если мы выбираем стандартную деталь, стираем с нее ручную краску
+            if (window.keyboardModel) {
+                window.keyboardModel.traverse((child) => {
+                    if (child.isMesh) {
+                        const name = child.name.toLowerCase();
+                        if (category === 'frames' && name.includes('frame')) child.userData.isCustomPainted = false;
+                        if (category === 'cases' && name.includes('case')) child.userData.isCustomPainted = false;
+                        if (category === 'keycaps' && (name.includes('key') || name.includes('enter'))) child.userData.isCustomPainted = false;
+                    }
+                });
+            }
+            
+            window.applyCurrentColors();
+            updateTotalPrice();
+            loadParts(category);
+        }
+
+       async function showProfile() {
+            const userJSON = localStorage.getItem('user');
+            if (!userJSON) return showCustomAlert('Доступ закрыт', 'Войдите в аккаунт.');
+            const user = JSON.parse(userJSON);
+            
+            closeMobileMenu();
+            hideAllViews();
+            document.getElementById('profile-view').style.display = 'block';
+            document.getElementById('profile-username').innerText = user.username;
+            
+            // ЗАГРУЖАЕМ ИСТОРИЮ ПОКУПОК
+            const ordersContainer = document.getElementById('orders-container');
+            if (ordersContainer) {
+                // Применяем класс горизонтальной прокрутки
+                ordersContainer.className = 'horizontal-scroll-container';
+                
+                let allOrders = JSON.parse(localStorage.getItem('mink1i_orders')) || [];
+                // Строгая проверка имени до нижнего подчеркивания
+                const userOrders = allOrders.filter(o => o.id.split('_')[0] === user.username.toUpperCase());
+
+                if (userOrders.length === 0) {
+                     ordersContainer.innerHTML = '<p style="color: #8b8c8f;">Вы еще ничего не заказывали.</p>';
+                } else {
+                     ordersContainer.innerHTML = userOrders.map(o => `
+                        <div class="build-card" style="border-color: rgba(34, 197, 94, 0.3);">
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;">
+                                <h4 style="color: #22c55e;">Заказ #${o.id}</h4>
+                                <span style="color: #94a3b8; font-size: 13px;">${o.date}</span>
+                            </div>
+                            <p style="color: #c084fc; font-weight: bold; font-size: 16px; margin-bottom: 10px;">Сумма: ${o.total} ₽</p>
+                            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.6;">
+                                ${o.items.map(item => `<div>- ${item.name} (${item.price} ₽)</div>`).join('')}
+                            </div>
+                        </div>
+                     `).join('');
+                }
+            }
+
+            // ЗАГРУЖАЕМ СБОРКИ ИЗ POSTGRESQL
+            const container = document.getElementById('builds-container');
+            // Применяем класс горизонтальной прокрутки
+            container.className = 'horizontal-scroll-container';
+            container.innerHTML = '<p style="color: #94a3b8;">Загрузка...</p>';
+
+            try {
+                const response = await fetch(`/api/users/${user.id}/builds`);
+                profileBuilds = await response.json(); 
+                
+                if (profileBuilds.length === 0) {
+                    container.innerHTML = '<p style="color: #8b8c8f;">У вас пока нет сохраненных сборок.</p>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                profileBuilds.forEach((b, index) => {
+                    // РАСШИФРОВКА КАСТОМНЫХ НАЗВАНИЙ
+                    b.display_frame = b.frame_name || 'Не выбрана';
+                    b.display_case = b.case_name || 'Не выбрано';
+                    b.display_keycap = b.keycap_name || 'Не выбраны';
+                    
+                    if (b.custom_colors && b.custom_colors !== '{}') {
+                        const cColors = JSON.parse(b.custom_colors);
+                        const getMatName = (mat) => {
+                            if (!mat) return 'Матовый пластик';
+                            if (mat.metalness > 0.7 && mat.roughness > 0.2) return 'Металл';
+                            if (mat.metalness > 0.7) return 'Хром';
+                            if (mat.roughness < 0.2) return 'Глянец';
+                            return 'Матовый пластик';
+                        };
+                        
+                        const keys = Object.keys(cColors);
+                        const frameKey = keys.find(k => k.toLowerCase().includes('frame'));
+                        if (frameKey) b.display_frame = `Кастом (${getMatName(cColors[frameKey])})`;
+                        
+                        const caseKey = keys.find(k => k.toLowerCase().includes('case'));
+                        if (caseKey) b.display_case = `Кастом (${getMatName(cColors[caseKey])})`;
+                        
+                        const keycapKey = keys.find(k => k.toLowerCase().includes('key') || k.toLowerCase().includes('enter'));
+                        if (keycapKey) b.display_keycap = `Кастомная расцветка`;
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'build-card';
+                    card.style.cursor = 'pointer'; 
+                    card.onclick = () => loadBuildFromProfile(b); 
+                    
+                    const imgHTML = b.image_data ? `<img src="${b.image_data}" alt="Build" style="width: 100%; border-radius: 8px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);">` : '';
+                    
+                    card.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                            <h4 style="margin: 0;">${b.build_name}</h4>
+                            <button class="btn-delete" onclick="event.stopPropagation(); deleteBuild(${b.id})" title="Удалить"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        ${imgHTML}
+                        <p style="font-size: 15px; color: #f8fafc; font-weight: 500;">Итого: ${b.total_price} ₽</p>
+                        <hr>
+                        <p><strong>Рамка:</strong> ${b.display_frame}</p>
+                        <p><strong>Дно:</strong> ${b.display_case}</p>
+                        <p><strong>Плата:</strong> ${b.pcb_name || '-'}</p>
+                        <p><strong>Свитчи:</strong> ${b.switch_name || '-'}</p>
+                        <p><strong>Кейкапы:</strong> ${b.display_keycap}</p>
+                        
+                        <button class="btn-accent" style="width: 100%; margin-top: 15px; background: #22c55e; border: none; padding: 10px; font-size: 13px; transition: 0.2s;" onmouseover="this.style.background='#16a34a'" onmouseout="this.style.background='#22c55e'" onclick="event.stopPropagation(); addProfileBuildToCart(${index})">
+                            <i class="fa-solid fa-cart-plus"></i> В корзину
+                        </button>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                container.innerHTML = '<p style="color: #ef4444;">Ошибка загрузки.</p>';
+            }
+        }
+
+
+        // Добавление сборки из профиля в корзину
+        function addProfileBuildToCart(index) {
+            const b = profileBuilds[index];
+            const cartItem = {
+                name: b.build_name,
+                build: {
+                    frame: { name: b.display_frame, id: b.frame_id, price: 0 },
+                    case: { name: b.display_case, id: b.case_id, price: 0 },
+                    pcb: { name: b.pcb_name, id: b.pcb_id, price: 0 },
+                    switches: { name: b.switch_name, id: b.switch_id, price: 0 },
+                    keycap: { name: b.display_keycap, id: b.keycap_id, price: 0 }
+                },
+                price: b.total_price,
+                isCustom: b.custom_colors && b.custom_colors !== '{}',
+                selected: true,
+                customColorsStr: b.custom_colors,
+                size: b.case_size || (b.build_name.includes('75') ? '75%' : '100%')
+            };
+            
+            cart.push(cartItem);
+            saveCart();
+            showToast('Сборка из профиля добавлена в корзину!');
+        }
+        
+        function deleteBuild(id) {
+            showCustomConfirm('Удаление', 'Вы точно хотите удалить эту сборку из профиля?', async () => {
+                try {
+                    const res = await fetch(`/api/builds/${id}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        showToast('Сборка удалена');
+                        showProfile(); // Обновляем список
+                    }
+                } catch (e) { console.error(e); }
+            });
+        }
+
+        async function loadBuildFromProfile(buildData) {
+            startConfigurator();
+            
+            currentBuild = {
+                frame: buildData.frame_name ? { name: buildData.frame_name, id: buildData.frame_id } : null,
+                case: buildData.case_name ? { name: buildData.case_name, id: buildData.case_id } : null,
+                pcb: buildData.pcb_name ? { name: buildData.pcb_name, id: buildData.pcb_id } : null,
+                switches: buildData.switch_name ? { name: buildData.switch_name, id: buildData.switch_id } : null,
+                keycap: buildData.keycap_name ? { name: buildData.keycap_name, id: buildData.keycap_id } : null
+            };
+            
+            // ПРОВЕРЯЕМ РЕАЛЬНЫЙ РАЗМЕР ИЗ БАЗЫ 
+            let loadedSize = buildData.case_size;
+            if (!loadedSize) {
+                if (buildData.build_name.includes('75')) loadedSize = '75%';
+                else if (buildData.build_name.includes('60')) loadedSize = '60%';
+                else loadedSize = '100%';
+            }
+            
+            // ПЕРЕКЛЮЧАЕМ ИНТЕРФЕЙС И 3D-МОДЕЛЬ ЧЕРЕЗ ЕДИНУЮ ФУНКЦИЮ
+            if (loadedSize === '75%') {
+                changeSize('75%', 'key75.gltf');
+            } else if (loadedSize === '60%') {
+                changeSize('60%', 'key60.gltf');
+            } else {
+                changeSize('100%', 'key100.gltf');
+            }
+
+            // ЖДЕМ ЗАГРУЗКУ И КРАСИМ
+            setTimeout(() => {
+                if (window.applyCurrentColors) window.applyCurrentColors();
+                
+                // Восстанавливаем точечный кастом
+                if (buildData.custom_colors && buildData.custom_colors !== '{}') {
+                    const savedColors = JSON.parse(buildData.custom_colors);
+                    hasCustomPaint = true;
+                    
+                    window.keyboardModel.traverse((child) => {
+                        if (child.isMesh && savedColors[child.name]) {
+                            const params = savedColors[child.name];
+                            
+                            child.userData.isCustomPainted = true;
+                            child.material = child.material.clone();
+                            child.material.map = null;
+                            child.material.vertexColors = false;
+                            
+                            child.material.color.setHex(params.color);
+                            child.material.metalness = params.metalness;
+                            child.material.roughness = params.roughness;
+                        }
+                    });
+                }
+                
+                document.getElementById('total-price').innerText = buildData.total_price + ' ₽';
+                showToast(`Сборка "${buildData.build_name}" восстановлена!`);
+                
+            }, 800); 
+        }
+        // применяет текущие цвета ко всей 3D-модели
+        
+        window.applyCurrentColors = function() {
+            if (!window.keyboardModel) return;
+
+            window.keyboardModel.traverse((child) => {
+                if (child.isMesh) {
+                    const meshName = child.name.toLowerCase();
+                    
+                    if (Array.isArray(child.material)) child.material = child.material[0]; 
+                    if (!child.material || !child.material.color) return;
+                    
+                    if (!child.userData.isCloned) {
+                        child.material = child.material.clone();
+                        child.material.map = null; 
+                        child.material.vertexColors = false; 
+                        child.userData.isCloned = true;
+                    }
+                    
+                    //Защищаем от сброса ВООБЩЕ ЛЮБЫЕ покрашенные детали
+                    if (child.userData.isCustomPainted) return;
+
+                    child.material.transparent = false;
+                    
+                    // РАМКА / КОЛЕСИКО
+                    if (meshName.includes('frame')) {
+                        if (currentBuild.frame) {
+                            const pName = currentBuild.frame.name.toLowerCase();
+                            if (pName.includes('неоновый')) { child.material.color.setHex(0x6b5a8c); child.material.metalness = 0.1; child.material.roughness = 0.2; }
+                            else if (pName.includes('пластик')) { child.material.color.setHex(0xe2e8f0); child.material.metalness = 0.0; child.material.roughness = 0.7; }
+                            else if (pName.includes('латунь')) { child.material.color.setHex(0xc5a059); child.material.metalness = 1.0; child.material.roughness = 0.2; }
+                            else if (pName.includes('карбон')) { child.material.color.setHex(0x1e293b); child.material.metalness = 0.3; child.material.roughness = 0.8; }
+                            else if (pName.includes('медь')) { child.material.color.setHex(0xb87333); child.material.metalness = 1.0; child.material.roughness = 0.3; }
+                            else if (pName.includes('синий')) { child.material.color.setHex(0x1e3a8a); child.material.metalness = 0.8; child.material.roughness = 0.3; }
+                            else if (pName.includes('красный')) { child.material.color.setHex(0x991b1b); child.material.metalness = 0.8; child.material.roughness = 0.3; }
+                            else { child.material.color.setHex(0x64748b); child.material.metalness = 0.8; child.material.roughness = 0.4; }
+                        } else {
+                            child.material.color.setHex(0x9ca3af); 
+                            child.material.metalness = 0.5; child.material.roughness = 0.5;
+                        }
+                    }
+
+                    // ДНО (Корпус)
+                    if (meshName.includes('case') || meshName.includes('cube')) {
+                        if (currentBuild.case) {
+                            const pName = currentBuild.case.name.toLowerCase();
+                            if (pName.includes('акрил') || pName.includes('поликарбонат')) { child.material.color.setHex(0xffffff); child.material.metalness = 0.0; child.material.roughness = 0.1; }
+                            else if (pName.includes('киберпанк')) { child.material.color.setHex(0xeab308); child.material.metalness = 0.6; child.material.roughness = 0.3; }
+                            else if (pName.includes('орех')) { child.material.color.setHex(0x3e2723); child.material.metalness = 0.0; child.material.roughness = 0.9; }
+                            else if (pName.includes('бамбук')) { child.material.color.setHex(0xd4a373); child.material.metalness = 0.0; child.material.roughness = 0.8; }
+                            else if (pName.includes('фиолетовый')) { child.material.color.setHex(0x4c1d95); child.material.metalness = 0.8; child.material.roughness = 0.4; }
+                            else if (pName.includes('пластик')) { child.material.color.setHex(0xffffff); child.material.metalness = 0.0; child.material.roughness = 0.8; }
+                            else { child.material.color.setHex(0x334155); child.material.metalness = 0.8; child.material.roughness = 0.4; }
+                        } else {
+                            child.material.color.setHex(0x334155);
+                        }
+                    }
+
+                    // КЕЙКАПЫ
+                    if (meshName.includes('key') || meshName.includes('enter')) {
+
+                        child.material.metalness = 0.0; child.material.roughness = 0.6; 
+                        if (currentBuild.keycap) {
+                            const pName = currentBuild.keycap.name.toLowerCase();
+                            if (pName.includes('botanical')) child.material.color.setHex(0x86a695); 
+                            else if (pName.includes('synthwave')) child.material.color.setHex(0x6b5a8c); 
+                            else if (pName.includes('red samurai')) child.material.color.setHex(0x8b0000); 
+                            else if (pName.includes('matcha')) child.material.color.setHex(0xc5e1a5); 
+                            else if (pName.includes('retro')) child.material.color.setHex(0xd2b48c); 
+                            else if (pName.includes('laser')) child.material.color.setHex(0x2b00ff); 
+                            else child.material.color.setHex(0x94a3b8);
+                        } else {
+                            child.material.color.setHex(0xe2e8f0);
+                        }
+                    }
+
+                    // ПЛАТА
+                    if (meshName.includes('pcb')) {
+                        child.material.color.setHex(0x1a5928);
+                        child.material.metalness = 0.4; child.material.roughness = 0.5;
+                    }
+                }
+            });
+        };
+
+        // Переключение инструмента (Кисть / Ластик)
+        let currentCustomTool = 'brush';
+        function setCustomTool(tool) {
+            currentCustomTool = tool;
+            document.getElementById('tool-brush').className = tool === 'brush' ? 'btn-accent' : 'btn-outline';
+            document.getElementById('tool-eraser').className = tool === 'eraser' ? 'btn-accent' : 'btn-outline';
+        }
+
+        // ОДИНАРНЫЙ КЛИК
+        window.addEventListener('meshClicked', (e) => {
+            const mesh = e.detail;
+            if (currentCategory !== 'custom') return;
+
+            // ФИЛЬТР: Запрещаем красить плату (pcb) и всё лишнее
+            const meshName = mesh.name.toLowerCase();
+            if (!meshName.includes('case') && !meshName.includes('frame') && !meshName.includes('key') && !meshName.includes('enter')) {
+                return; 
+            }
+
+            if (currentCustomTool === 'eraser') {
+                if (mesh.userData.isCustomPainted) {
+                    mesh.userData.isCustomPainted = false;
+                    window.applyCurrentColors(); 
+                    updateTotalPrice(); // Пересчитываем цену при стирании
+                }
+                return;
+            }
+
+            mesh.userData.isCustomPainted = true;
+            mesh.material = mesh.material.clone();
+            mesh.material.map = null;
+            mesh.material.vertexColors = false;
+            
+            mesh.material.color.set(document.getElementById('brush-color').value); 
+            const brushMat = document.getElementById('brush-material').value;
+            
+            if (brushMat === 'matte') { mesh.material.metalness = 0.0; mesh.material.roughness = 0.8; } 
+            else if (brushMat === 'glossy') { mesh.material.metalness = 0.1; mesh.material.roughness = 0.1; } 
+            else if (brushMat === 'metal') { mesh.material.metalness = 0.8; mesh.material.roughness = 0.4; } 
+            else if (brushMat === 'chrome') { mesh.material.metalness = 0.8; mesh.material.roughness = 0.1; } // Снизили "идеальность" зеркала, чтобы не было черным
+            
+            updateTotalPrice(); // Пересчитываем цену после покраски
+        });
+
+        // ДВОЙНОЙ КЛИК
+        window.addEventListener('meshDoubleClicked', (e) => {
+            const mesh = e.detail;
+            if (currentCategory !== 'custom') return;
+
+            // ФИЛЬТР: Запрещаем красить плату (pcb) и всё лишнее
+            const meshName = mesh.name.toLowerCase();
+            if (!meshName.includes('case') && !meshName.includes('frame') && !meshName.includes('key') && !meshName.includes('enter')) {
+                return; 
+            }
+
+            if (mesh.userData.isCustomPainted) {
+                mesh.userData.isCustomPainted = false;
+                window.applyCurrentColors(); 
+                updateTotalPrice(); // Пересчитываем цену при стирании
+            }
+        });
+
+        async function loadParts(category) {
+            currentCategory = category;
+            document.querySelectorAll('.tabs span').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${category}`).classList.add('active');
+
+            try {
+                const response = await fetch(`/api/${category}`);
+                let parts = await response.json();
+                
+                // Фильтруем размер ТОЛЬКО для корпусов и плат
+                if (category === 'cases' || category === 'pcbs') {
+                    parts = parts.filter(p => p.size === currentSize);
+                }
+                // Фильтруем свитчи ТОЛЬКО если выбрана плата (по пинам)
+                if (category === 'switches' && currentBuild.pcb) {
+                    parts = parts.filter(p => p.pin_type === currentBuild.pcb.pin_type);
+                }
+
+                const container = document.getElementById('parts-list');
+                if (parts.length === 0) {
+                    container.innerHTML = `<p style="color:#ef4444; padding:10px; font-size: 13px;">Нет совместимых деталей. Проверьте выбор платы.</p>`;
+                    return;
+                }
+                
+                container.innerHTML = '';
+                parts.forEach(part => {
+                    const key = category === 'cases' ? 'case' : category === 'switches' ? 'switches' : category.slice(0, -1);
+                    const isSelected = currentBuild[key]?.id === part.id;
+                    const card = document.createElement('div');
+                    card.className = `part-card ${isSelected ? 'selected' : ''}`;
+                    card.innerHTML = `
+                        <div><div style="font-weight: 500; font-size: 13px; color: #e2e8f0;">${part.name}</div><div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">${part.price} ₽</div></div>
+                        <i class="fa-solid fa-plus" style="color: ${isSelected ? '#9ca3af' : '#475569'}; font-size: 12px;"></i>`;
+                    card.onclick = () => selectPart(category, part);
+                    container.appendChild(card);
+                });
+            } catch (error) { console.error(error); }
+        }
+
+        // Открытие вкладки "Кастом"
+        function loadCustomPaintTab() {
+            currentCategory = 'custom';
+            document.querySelectorAll('.tabs span').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-custom').classList.add('active');
+            
+            // Скрываем список деталей, показываем палитру
+            document.getElementById('parts-list').style.display = 'none';
+            document.getElementById('custom-paint-panel').style.display = 'flex';
+        }
+
+        const originalLoadParts = loadParts;
+        loadParts = async function(category) {
+            // Прячем палитру, возвращаем обычный список
+            document.getElementById('custom-paint-panel').style.display = 'none';
+            document.getElementById('parts-list').style.display = 'flex';
+            
+            // Вызываем оригинальную логику загрузки из базы
+            await originalLoadParts(category);
+        };
+
+        // Функция очистки: стирает кастомные рисунки и возвращает базовый цвет
+        function resetCustomPaint() {
+            if (!window.keyboardModel) return;
+            window.keyboardModel.traverse((child) => {
+                if (child.isMesh && child.userData.isCustomPainted) {
+                    child.userData.isCustomPainted = false; 
+                }
+            });
+            window.applyCurrentColors(); // Перекрашиваем всё базовыми цветами
+        }
+
+        // Полный сброс всей сборки
+        function resetFullBuild() {
+            // Вызываем наше кастомное окно подтверждения, чтобы защитить от мисскликов
+            showCustomConfirm('Очистка конструктора', 'Вы уверены, что хотите полностью сбросить текущую сборку? Все выбранные детали и покраска будут удалены.', () => {
+                
+                // Обнуляем базу выбранных деталей
+                currentBuild = { frame: null, case: null, pcb: null, switches: null, keycap: null };
+                
+                // Снимаем всю ручную краску
+                if (window.keyboardModel) {
+                    window.keyboardModel.traverse((child) => {
+                        if (child.isMesh && child.userData.isCustomPainted) {
+                            child.userData.isCustomPainted = false;
+                        }
+                    });
+                }
+                hasCustomPaint = false;
+                
+                // Применяем базовые цвета и пересчитываем нули
+                window.applyCurrentColors();
+                updateTotalPrice();
+                
+                // Перерисовываем список деталей, чтобы снять фиолетовые выделения с карточек
+                loadParts(currentCategory);
+                
+                showToast('Конструктор полностью очищен!');
+            });
+        }
+
+       async function saveBuild() {
+            const userJSON = localStorage.getItem('user');
+            if (!userJSON) return showCustomAlert('Ошибка', 'Войдите в аккаунт!');
+            
+            // УМНАЯ ПРОВЕРКА ДЕТАЛЕЙ (Такая же, как в корзине) 
+            let customHas = { case: false, frame: false };
+            if (window.keyboardModel) {
+                window.keyboardModel.traverse((child) => {
+                    if (child.isMesh && child.userData.isCustomPainted) {
+                        const name = child.name.toLowerCase();
+                        if (name.includes('case')) customHas.case = true;
+                        if (name.includes('frame')) customHas.frame = true;
+                    }
+                });
+            }
+
+            if (!currentBuild.pcb || !currentBuild.switches || !currentBuild.keycap) {
+                return showCustomAlert('Внимание', 'Обязательно выберите плату, свитчи и кейкапы из списка!');
+            }
+            if (!currentBuild.case && !customHas.case) {
+                return showCustomAlert('Внимание', 'Выберите дно (корпус) из списка или раскрасьте его во вкладке "Кастом".');
+            }
+            if (currentSize !== '60%' && !currentBuild.frame && !customHas.frame) {
+                return showCustomAlert('Внимание', 'Выберите рамку из списка или раскрасьте её во вкладке "Кастом".');
+            }
+
+            showCustomPrompt('Сохранение сборки', 'Придумайте название для вашей клавиатуры:', 'Мой кастом', async (buildName) => {
+                const user = JSON.parse(userJSON); 
+                
+                const customColors = {};
+                if (window.keyboardModel) {
+                    window.keyboardModel.traverse((child) => {
+                        if (child.isMesh && child.userData.isCustomPainted) {
+                            customColors[child.name] = {
+                                color: child.material.color.getHex(),
+                                metalness: child.material.metalness || 0,
+                                roughness: child.material.roughness || 0.6
+                            };
+                        }
+                    });
+                }
+
+                const priceText = document.getElementById('total-price').innerText;
+                const total = parseInt(priceText.replace(/\D/g, '')) || 0;
+                
+                const canvas = document.querySelector('#preview-container canvas');
+                const imageData = canvas ? canvas.toDataURL('image/png') : '';
+
+                // Безопасное получение ID (если деталь только покрашена, передаем null в базу)
+                const frameId = currentBuild.frame ? currentBuild.frame.id : null;
+                const caseId = currentBuild.case ? currentBuild.case.id : null;
+
+                const data = {
+                    user_id: user.id,
+                    build_name: buildName,
+                    frame_id: frameId,
+                    case_id: caseId,
+                    pcb_id: currentBuild.pcb.id,
+                    switch_id: currentBuild.switches.id,
+                    keycap_id: currentBuild.keycap.id,
+                    total_price: total,
+                    image_data: imageData,
+                    custom_colors: JSON.stringify(customColors)
+                };
+
+                try {
+                    const response = await fetch('/api/builds', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if (response.ok) {
+                        showToast('Сборка успешно сохранена в профиль!');
+                    } else {
+                        showCustomAlert('Ошибка', 'Не удалось сохранить сборку.');
+                    }
+                } catch (e) {
+                    showCustomAlert('Ошибка', 'Ошибка сервера.');
+                }
+            });
+        }
+
+        let currentAuthMode = 'login'; 
+        function openModal() { document.getElementById('auth-modal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('auth-modal').style.display = 'none'; }
+        
+        function switchTab(mode) {
+            currentAuthMode = mode;
+            document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+            document.getElementById('tab-register').classList.toggle('active', mode === 'register');
+            document.getElementById('auth-submit-btn').innerText = mode === 'login' ? 'Войти' : 'Зарегистрироваться';
+        }
+
+        // ОГИКА КОРЗИНЫ (С СОХРАНЕНИЕМ В LOCALSTORAGE) 
+        let cart = [];
+        let hasCustomPaint = false; 
+
+        // Узнаем ключ корзины для текущего пользователя
+        function getCartKey() {
+            const userJSON = localStorage.getItem('user');
+            return userJSON ? 'mink1i_cart_' + JSON.parse(userJSON).id : 'mink1i_cart_guest';
+        }
+
+        // Загружаем нужную корзину
+        function loadCartData() {
+            cart = JSON.parse(localStorage.getItem(getCartKey())) || [];
+            const cartCounter = document.getElementById('cart-counter');
+            if (cartCounter) cartCounter.innerText = cart.length;
+        }
+
+        function saveCart() {
+            localStorage.setItem(getCartKey(), JSON.stringify(cart));
+            document.getElementById('cart-counter').innerText = cart.length; 
+        }
+
+        // Загружаем корзину при первом открытии сайта
+        loadCartData();
+
+     function updateTotalPrice() {
+            let total = 0;
+            let replaced = { case: false, frame: false, keycaps: false };
+            let customAdded = 0;
+            
+            hasCustomPaint = false; // Сбрасываем и проверяем заново
+
+            if (window.keyboardModel) {
+                window.keyboardModel.traverse((child) => {
+                    if (child.isMesh && child.userData.isCustomPainted) {
+                        hasCustomPaint = true; // Если нашли хоть одну кастомную деталь
+                        const m = child.material;
+                        let matPrice = 2000; 
+                        
+                        // Определяем выбранный материал
+                        if (m.metalness > 0.7 && m.roughness > 0.2) matPrice = 5000; // Металл
+                        else if (m.metalness > 0.7) matPrice = 7000; // Хром
+                        else if (m.roughness < 0.2) matPrice = 2500; // Глянец
+
+                        const name = child.name.toLowerCase();
+                        if (name.includes('case') && !replaced.case) { replaced.case = true; customAdded += matPrice; }
+                        else if (name.includes('frame') && !replaced.frame) { replaced.frame = true; customAdded += matPrice; }
+                        else if ((name.includes('key') || name.includes('enter')) && !replaced.keycaps) { replaced.keycaps = true; customAdded += 3000; }
+                    }
+                });
+            }
+
+            // Исключаем из базы те детали, которые закрасили вручную
+            if (currentBuild.frame && !replaced.frame) total += currentBuild.frame.price;
+            if (currentBuild.case && !replaced.case) total += currentBuild.case.price;
+            if (currentBuild.keycap && !replaced.keycaps) total += currentBuild.keycap.price;
+            
+            if (currentBuild.pcb) total += currentBuild.pcb.price;
+            if (currentBuild.switches) total += currentBuild.switches.price;
+
+            total += customAdded; // Добавляем цену кастомных материалов
+            
+            document.getElementById('total-price').innerText = total + ' ₽';
+            return total;
+        }
+
+        function addToCart() {
+            //  ПРОВЕРКА ДЕТАЛЕЙ
+            let customHas = { case: false, frame: false };
+            if (window.keyboardModel) {
+                window.keyboardModel.traverse((child) => {
+                    if (child.isMesh && child.userData.isCustomPainted) {
+                        const name = child.name.toLowerCase();
+                        if (name.includes('case')) customHas.case = true;
+                        if (name.includes('frame')) customHas.frame = true;
+                    }
+                });
+            }
+
+            if (!currentBuild.pcb || !currentBuild.switches || !currentBuild.keycap) {
+                return showCustomAlert('Внимание', 'Обязательно выберите плату, свитчи и кейкапы из списка!');
+            }
+            if (!currentBuild.case && !customHas.case) {
+                return showCustomAlert('Внимание', 'Выберите дно (корпус) из списка или раскрасьте его во вкладке "Кастом".');
+            }
+            if (currentSize !== '60%' && !currentBuild.frame && !customHas.frame) {
+                return showCustomAlert('Внимание', 'Выберите рамку из списка или раскрасьте её во вкладке "Кастом".');
+            }
+            
+            const total = parseInt(document.getElementById('total-price').innerText.replace(/\D/g, ''));
+            
+            // Запоминаем кастомную покраску по ПОРЯДКОВОМУ НОМЕРУ (защита от дубликатов имен)
+            const customColors = {};
+            let overriddenFrame = null;
+            let overriddenCase = null;
+            let overriddenKeycaps = null;
+
+            if (window.keyboardModel && hasCustomPaint) {
+                let meshIndex = 0;
+                window.keyboardModel.traverse((child) => {
+                    if (child.isMesh) {
+                        if (child.userData.isCustomPainted) {
+                            const m = child.material;
+                            customColors[meshIndex] = { 
+                                name: child.name, // Сохраняем имя для текстового описания
+                                color: m.color.getHex(), 
+                                metalness: m.metalness || 0, 
+                                roughness: m.roughness || 0.6 
+                            };
+
+                            let matName = 'Матовый пластик';
+                            if (m.metalness > 0.7 && m.roughness > 0.2) matName = 'Металл';
+                            else if (m.metalness > 0.7) matName = 'Хром';
+                            else if (m.roughness < 0.2) matName = 'Глянец';
+
+                            const name = child.name.toLowerCase();
+                            if (name.includes('case') || name.includes('cube')) overriddenCase = `Кастом (${matName})`;
+                            else if (name.includes('frame')) overriddenFrame = `Кастом (${matName})`;
+                            else if (name.includes('key') || name.includes('enter')) overriddenKeycaps = `Кастомная расцветка`;
+                        }
+                        meshIndex++;
+                    }
+                });
+            }
+
+            // Клонируем сборку для корзины и подменяем названия деталей, если они покрашены
+            const buildClone = JSON.parse(JSON.stringify(currentBuild));
+
+            if (overriddenFrame) {
+                if (!buildClone.frame) buildClone.frame = {};
+                buildClone.frame.name = overriddenFrame;
+            }
+            if (overriddenCase) {
+                if (!buildClone.case) buildClone.case = {};
+                buildClone.case.name = overriddenCase;
+            }
+            if (overriddenKeycaps) {
+                if (!buildClone.keycap) buildClone.keycap = {};
+                buildClone.keycap.name = overriddenKeycaps;
+            }
+            
+            const cartItem = {
+                name: hasCustomPaint ? 'Кастомная сборка' : 'Стандартная сборка',
+                build: buildClone, 
+                price: total,
+                isCustom: hasCustomPaint,
+                selected: true,
+                size: currentSize,
+                customColorsStr: JSON.stringify(customColors) 
+            };
+            
+            cart.push(cartItem);
+            saveCart(); 
+            
+            showToast(`
+                <strong style="display: block; margin-bottom: 4px;">Добавлено в корзину</strong>
+                <span style="color: #94a3b8; font-size: 12px;">Сумма: ${total} ₽</span>
+            `);
+        }
+
+        function resetConfiguratorState() {
+            currentBuild = { frame: null, case: null, pcb: null, switches: null, keycap: null };
+            hasCustomPaint = false;
+            if (window.keyboardModel && typeof resetCustomPaint === 'function') resetCustomPaint();
+            updateTotalPrice();
+        }
+
+        async function submitAuth() {
+            const username = document.getElementById('auth-login').value;
+            const password = document.getElementById('auth-pass').value;
+            
+            if (!username || !password) {
+                return showCustomAlert('Внимание', 'Пожалуйста, введите логин и пароль!');
+            }
+            
+            const endpoint = currentAuthMode === 'login' ? '/api/login' : '/api/register';
+            
+            try {
+                const res = await fetch(endpoint, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ username, password }) 
+                });
+                const data = await res.json();
+                
+                if (res.ok) { 
+                    localStorage.setItem('user', JSON.stringify(data.user)); 
+                    
+                    // Загружаем личную корзину и очищаем стол от прошлого юзера
+                    loadCartData();
+                    resetConfiguratorState();
+
+                    closeModal(); 
+                    checkLogin(); 
+                    
+                    document.getElementById('auth-login').value = ''; 
+                    document.getElementById('auth-pass').value = ''; 
+                    showToast(`Добро пожаловать, ${data.user.username}!`); 
+                } else {
+                    showCustomAlert('Ошибка авторизации', data.error);
+                }
+            } catch (e) { 
+                showCustomAlert('Ошибка', 'Нет соединения с сервером.'); 
+            }
+        }
+
+        function logout() { 
+            localStorage.removeItem('user'); 
+            
+            // Переключаемся на пустую корзину гостя и очищаем стол
+            loadCartData();
+            resetConfiguratorState();
+            
+            checkLogin(); 
+            goHome(); 
+        }
+
+        function toggleAllCartItems(isChecked) {
+            cart.forEach(item => item.selected = isChecked);
+            saveCart();
+            showCartView();
+        }
+
+        function deleteCartItem(index) {
+            cart.splice(index, 1); // Удаляем 1 элемент по индексу
+            saveCart();
+            showCartView();
+            showToast('Товар удален из корзины');
+        }
+
+        function confirmOrder() {
+            const userJSON = localStorage.getItem('user');
+            const user = userJSON ? JSON.parse(userJSON) : { username: 'GUEST' };
+            
+            const selectedItems = cart.filter(item => item.selected);
+            if(selectedItems.length === 0) return;
+
+            let orders = JSON.parse(localStorage.getItem('mink1i_orders')) || [];
+            
+            //Считаем сколько заказов УЖЕ БЫЛО у этого пользователя
+            const userOrdersCount = orders.filter(o => o.id.startsWith(user.username.toUpperCase() + '_')).length;
+            
+            // Генерируем номер по порядку: ИМЯ_1, ИМЯ_2, ...
+            const orderId = user.username.toUpperCase() + '_' + (userOrdersCount + 1);
+            
+            const sum = selectedItems.reduce((acc, item) => acc + item.price, 0);
+
+            const newOrder = { id: orderId, date: new Date().toLocaleDateString('ru-RU'), items: selectedItems, total: sum };
+            orders.unshift(newOrder); 
+            localStorage.setItem('mink1i_orders', JSON.stringify(orders));
+
+            closeCheckout();
+            
+            showCustomAlert('Заказ оформлен!', `Номер вашего заказа: ${orderId}\nСпасибо за покупку! Наш менеджер скоро свяжется с вами.`, () => {
+                cart = cart.filter(item => !item.selected);
+                saveCart(); 
+                showCartView(); 
+            });
+        }
+
+        // Загрузка товара из корзины в Конфигуратор
+        function loadBuildFromCart(index) {
+            const item = cart[index];
+            startConfigurator();
+            
+            currentBuild = JSON.parse(JSON.stringify(item.build));
+            hasCustomPaint = item.isCustom;
+            
+            const is75 = item.size === '75%';
+            if (is75) {
+                currentSize = '75%';
+                document.getElementById('size-100').classList.remove('active');
+                document.getElementById('size-75').classList.add('active');
+                document.getElementById('tab-frames').innerText = 'Колесико';
+                window.loadModel('key75.gltf');
+            } else {
+                currentSize = '100%';
+                document.getElementById('size-100').classList.add('active');
+                document.getElementById('size-75').classList.remove('active');
+                document.getElementById('tab-frames').innerText = 'Рамка';
+                window.loadModel('key100.gltf');
+            }
+
+            setTimeout(() => {
+                if (window.applyCurrentColors) window.applyCurrentColors();
+                
+                if (item.customColorsStr && item.customColorsStr !== '{}') {
+                    const savedColors = JSON.parse(item.customColorsStr);
+                    window.keyboardModel.traverse((child) => {
+                        if (child.isMesh && savedColors[child.name]) {
+                            const params = savedColors[child.name];
+                            child.userData.isCustomPainted = true;
+                            child.material = child.material.clone();
+                            child.material.map = null;
+                            child.material.vertexColors = false;
+                            child.material.color.setHex(params.color);
+                            child.material.metalness = params.metalness;
+                            child.material.roughness = params.roughness;
+                        }
+                    });
+                }
+                updateTotalPrice();
+                showToast(`Сборка "${item.name}" загружена в конструктор!`);
+            }, 800);
+        }
+
+        function toggleCartItem(index) {
+            cart[index].selected = !cart[index].selected;
+            saveCart(); 
+            showCartView(); 
+        }
+
+        function updateCartTotal() {
+            let sum = 0; let count = 0;
+            cart.forEach(item => {
+                if (item.selected) {
+                    sum += item.price;
+                    count++;
+                }
+            });
+            document.getElementById('cart-total').innerText = sum + ' ₽';
+            if(document.getElementById('cart-items-count')) document.getElementById('cart-items-count').innerText = count + ' шт.';
+            if (document.getElementById('checkout-total-sum')) document.getElementById('checkout-total-sum').innerText = sum + ' ₽';
+        }
+
+        function checkout() {
+            const hasSelected = cart.some(item => item.selected);
+            if (!hasSelected) return showCustomAlert('Внимание', 'Выберите хотя бы один товар для оформления!');
+            
+            updateCartTotal();
+            document.querySelector('input[name="payment-method"][value="cash"]').checked = true;
+            toggleQR(false);
+            document.getElementById('checkout-modal').style.display = 'flex';
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkout-modal').style.display = 'none';
+        }
+
+        function toggleQR(show) {
+            document.getElementById('sbp-qr-block').style.display = show ? 'block' : 'none';
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            // Используем иконку галочки 
+            // или просто текстовый символ ✔
+            toast.innerHTML = `<span style="color: #22c55e; font-size: 18px;">✔</span> <div>${message}</div>`;
+            
+            container.appendChild(toast);
+
+            // Убираем уведомление через 3 секунды
+            setTimeout(() => {
+                toast.style.opacity = '0'; // Плавное исчезновение
+                setTimeout(() => toast.remove(), 300); // Удаление из HTML
+            }, 3000);
+        }
+
+        function showCustomAlert(title, text, onOk = null) {
+            document.getElementById('custom-modal').style.display = 'flex';
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-text').innerText = text;
+            
+            document.getElementById('modal-input').style.display = 'none'; // Прячем поле
+            document.getElementById('modal-btn-cancel').style.display = 'none'; // Прячем отмену
+            
+            document.getElementById('modal-btn-ok').onclick = () => {
+                document.getElementById('custom-modal').style.display = 'none';
+                if (onOk) onOk();
+            };
+        }
+
+        function showCustomConfirm(title, text, onConfirm) {
+            document.getElementById('custom-modal').style.display = 'flex';
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-text').innerText = text;
+            
+            document.getElementById('modal-input').style.display = 'none'; // Прячем поле
+            document.getElementById('modal-btn-cancel').style.display = 'block'; // Показываем отмену
+            
+            document.getElementById('modal-btn-cancel').onclick = () => document.getElementById('custom-modal').style.display = 'none';
+            document.getElementById('modal-btn-ok').onclick = () => {
+                document.getElementById('custom-modal').style.display = 'none';
+                onConfirm();
+            };
+        }
+
+        //Окно с полем ввода (замена стандартному prompt)
+        function showCustomPrompt(title, text, defaultValue, onConfirm) {
+            document.getElementById('custom-modal').style.display = 'flex';
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-text').innerText = text;
+            
+            const input = document.getElementById('modal-input');
+            input.style.display = 'block'; // Показываем поле
+            input.value = defaultValue;
+            input.focus();
+            
+            document.getElementById('modal-btn-cancel').style.display = 'block';
+            
+            document.getElementById('modal-btn-cancel').onclick = () => document.getElementById('custom-modal').style.display = 'none';
+            document.getElementById('modal-btn-ok').onclick = () => {
+                const val = input.value.trim();
+                if (val) {
+                    document.getElementById('custom-modal').style.display = 'none';
+                    onConfirm(val);
+                }
+            };
+        }
+
+        function checkLogin() {
+            const userJSON = localStorage.getItem('user');
+            if (userJSON) {
+                document.getElementById('login-btn').style.display = 'none';
+                document.getElementById('user-panel').style.display = 'flex';
+                document.getElementById('username-display').innerText = 'Привет, ' + JSON.parse(userJSON).username;
+            } else {
+                document.getElementById('login-btn').style.display = 'block';
+                document.getElementById('user-panel').style.display = 'none';
+            }
+        }
+        
+        
+        checkLogin();
+    </script>
+    
+    <!-- ПОДКЛЮЧЕНИЕ 3D СКРИПТА -->
+    <script type="module" src="script.js"></script>
+
+    <!-- КАСТОМНОЕ ВСПЛЫВАЮЩЕЕ ОКНО -->
+    <div id="custom-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: #1e293b; padding: 30px; border-radius: 16px; border: 1px solid #6b5a8c; width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+            <h3 id="modal-title" style="color: #f8fafc; margin-bottom: 15px; font-size: 18px;">Заголовок</h3>
+            <p id="modal-text" style="color: #cbd5e1; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">Текст</p>
+            
+            <!-- Скрытое поле ввода для названия клавиатуры -->
+            <input type="text" id="modal-input" style="display: none; width: 100%; padding: 12px; margin-bottom: 25px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 14px;" placeholder="Введите название...">
+            
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button id="modal-btn-cancel" class="btn-outline" style="display: none; padding: 10px 20px; flex: 1;">Отмена</button>
+                <button id="modal-btn-ok" class="btn-accent" style="padding: 10px 20px; flex: 1;">ОК</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- КОНТЕЙНЕР ДЛЯ TOAST-УВЕДОМЛЕНИЙ -->
+    <div id="toast-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
+
+    <!-- МОДАЛКА ОФОРМЛЕНИЯ ЗАКАЗА И ОПЛАТЫ -->
+    <div class="modal-overlay" id="checkout-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.9); z-index: 1001; justify-content: center; align-items: center;">
+        <div class="modal-box" style="width: 90%; max-width: 400px; text-align: left; padding: 30px; background: #1e293b; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+            <h3 style="color: #f8fafc; font-size: 20px; margin-bottom: 15px; font-weight: 600;">Оформление заказа</h3>
+            <p style="color: #cbd5e1; font-size: 14px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;">Итого к оплате: <strong id="checkout-total-sum" style="color: #c084fc; font-size: 18px;">0 ₽</strong></p>
+            
+            <label style="color: #e2e8f0; font-size: 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; cursor: pointer;">
+                <input type="radio" name="payment-method" value="cash" checked onchange="toggleQR(false)" style="accent-color: #6b5a8c; width: 18px; height: 18px;">
+                Оплата при получении
+            </label>
+            <label style="color: #e2e8f0; font-size: 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 25px; cursor: pointer;">
+                <input type="radio" name="payment-method" value="sbp" onchange="toggleQR(true)" style="accent-color: #6b5a8c; width: 18px; height: 18px;">
+                Оплата по СБП
+            </label>
+
+            <!-- Блок с QR-кодом (Скрыт по умолчанию) -->
+            <div id="sbp-qr-block" style="display: none; text-align: center; margin-bottom: 25px; background: #2f3640; padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <img src="images\qr_kod.jpg" alt="QR-код СБП" style="width: 100%; max-width: 220px; border-radius: 12px; margin-bottom: 15px;">
+                <p style="color: #f8fafc; font-size: 13px; margin: 0; font-weight: 500; line-height: 1.5;">Манькова Маргарита Ивановна<br><span style="color: #94a3b8; font-weight: 400;">Договор 8079263009</span></p>
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <button class="btn-outline" style="flex: 1; padding: 12px;" onclick="closeCheckout()">Отмена</button>
+                <button class="btn-accent" style="flex: 1; padding: 12px; background: #22c55e; border: none;" onclick="confirmOrder()">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
