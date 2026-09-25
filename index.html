@@ -32,11 +32,14 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
+        html { background-color: #11141a; }
+        
         body { 
             /* Глубокий сине-серый градиент*/
             background: linear-gradient(135deg, #1b2028 0%, #11141a 100%);
+            background-attachment: fixed;
             color: #e2e8f0; 
-            min-height: 100vh;
+            min-height: 100dvh;
             overflow-x: hidden; 
             position: relative;
         }
@@ -353,7 +356,7 @@
             .tabs { 
                 justify-content: flex-start !important; 
                 overflow-x: auto; 
-                overflow-y: hidden; /* <-- ЖЕСТКО ЗАПРЕЩАЕМ ВЕРТИКАЛЬНЫЙ СКРОЛЛ */
+                overflow-y: hidden; /* ЖЕСТКО ЗАПРЕЩАЕМ ВЕРТИКАЛЬНЫЙ СКРОЛЛ */
                 white-space: nowrap; 
                 padding-bottom: 12px;
                 scrollbar-width: none; /* Скрываем ползунок */
@@ -383,9 +386,10 @@
             
             select#brush-material { padding: 10px; font-size: 13px; height: auto; }
 
-            /* 7. Корзина*/
+            /* Корзина*/
             #cart-view { 
                 padding: 70px 0 0 0 !important; /* Убираем боковые отступы у контейнера */
+                height: 100dvh !important; /* Учитываем динамическую высоту экрана */
             }
             #cart-view h2 { padding: 0 20px; margin-bottom: 15px !important; font-size: 22px; }
             
@@ -700,7 +704,7 @@
             // Кнопка "Выбрать все"
             const allSelected = cart.every(item => item.selected);
             container.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 5px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px 5px; position: sticky; top: -4px; background: #11141a; z-index: 10; border-bottom: 1px solid rgba(255,255,255,0.05);">
                     <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #e2e8f0; font-size: 14px; font-weight: 500;">
                         <input type="checkbox" class="cart-item-cb" ${allSelected ? 'checked' : ''} onchange="toggleAllCartItems(this.checked)" style="width: 18px; height: 18px;">
                         Выбрать все
