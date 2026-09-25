@@ -327,11 +327,14 @@
             .menu-wrapper {
                 display: flex !important; 
                 position: fixed; top: 60px; left: -100%; 
-                width: 250px; height: calc(100vh - 60px);
-                background: rgba(17, 20, 26, 0.98); flex-direction: column; padding: 25px; 
+                width: 250px; 
+                height: calc(100dvh - 60px); /* Используем dvh (динамическую высоту), чтобы браузер вычел строку адреса */
+                background: rgba(17, 20, 26, 0.98); flex-direction: column; 
+                padding: 25px 25px 120px 25px; /* Сделали огромный отступ снизу (120px) */
                 z-index: 999; align-items: flex-start; border-right: 1px solid rgba(255,255,255,0.05);
                 transition: left 0.3s ease-in-out;
                 margin-left: 0; 
+                overflow-y: auto; /* Разрешаем меню прокручиваться пальцем, если элементов станет много */
             }
             .menu-wrapper.active { left: 0; } 
             
@@ -347,6 +350,17 @@
                 height: auto !important; 
             }
             
+            /* Скролл для вкладок деталей, чтобы "Колесико" и "КАСТОМ" влезали */
+            .tabs { 
+                justify-content: flex-start !important; 
+                overflow-x: auto; 
+                white-space: nowrap; 
+                padding-bottom: 12px;
+                scrollbar-width: none; /* Скрываем ползунок */
+            }
+            .tabs::-webkit-scrollbar { display: none; } 
+            .tabs span { font-size: 11px; padding-right: 15px; }
+
             /* На всякий случай выравниваем заголовок и кнопки размера на узких экранах */
             #workspace > div:first-child { flex-wrap: wrap; gap: 10px; justify-content: center !important; text-align: center; }
 
@@ -928,11 +942,11 @@
             const cartItem = {
                 name: b.build_name,
                 build: {
-                    frame: { name: b.display_frame, id: b.frame_id, price: 0 },
-                    case: { name: b.display_case, id: b.case_id, price: 0 },
+                    frame: { name: b.frame_name, id: b.frame_id, price: 0 },
+                    case: { name: b.case_name, id: b.case_id, price: 0 },
                     pcb: { name: b.pcb_name, id: b.pcb_id, price: 0 },
                     switches: { name: b.switch_name, id: b.switch_id, price: 0 },
-                    keycap: { name: b.display_keycap, id: b.keycap_id, price: 0 }
+                    keycap: { name: b.keycap_name, id: b.keycap_id, price: 0 }
                 },
                 price: b.total_price,
                 isCustom: b.custom_colors && b.custom_colors !== '{}',
@@ -961,15 +975,7 @@
         async function loadBuildFromProfile(buildData) {
             startConfigurator();
             
-            currentBuild = {
-                frame: buildData.frame_name ? { name: buildData.frame_name, id: buildData.frame_id } : null,
-                case: buildData.case_name ? { name: buildData.case_name, id: buildData.case_id } : null,
-                pcb: buildData.pcb_name ? { name: buildData.pcb_name, id: buildData.pcb_id } : null,
-                switches: buildData.switch_name ? { name: buildData.switch_name, id: buildData.switch_id } : null,
-                keycap: buildData.keycap_name ? { name: buildData.keycap_name, id: buildData.keycap_id } : null
-            };
-            
-            // ПРОВЕРЯЕМ РЕАЛЬНЫЙ РАЗМЕР ИЗ БАЗЫ 
+            // СНАЧАЛА ПЕРЕКЛЮЧАЕМ РАЗМЕР (иначе changeSize сотрет нам детали)
             let loadedSize = buildData.case_size;
             if (!loadedSize) {
                 if (buildData.build_name.includes('75')) loadedSize = '75%';
@@ -977,7 +983,6 @@
                 else loadedSize = '100%';
             }
             
-            // ПЕРЕКЛЮЧАЕМ ИНТЕРФЕЙС И 3D-МОДЕЛЬ ЧЕРЕЗ ЕДИНУЮ ФУНКЦИЮ
             if (loadedSize === '75%') {
                 changeSize('75%', 'key75.gltf');
             } else if (loadedSize === '60%') {
@@ -986,7 +991,16 @@
                 changeSize('100%', 'key100.gltf');
             }
 
-            // ЖДЕМ ЗАГРУЗКУ И КРАСИМ
+            //ТЕПЕРЬ ВОССТАНАВЛИВАЕМ ДЕТАЛИ
+            currentBuild = {
+                frame: buildData.frame_name ? { name: buildData.frame_name, id: buildData.frame_id } : null,
+                case: buildData.case_name ? { name: buildData.case_name, id: buildData.case_id } : null,
+                pcb: buildData.pcb_name ? { name: buildData.pcb_name, id: buildData.pcb_id } : null,
+                switches: buildData.switch_name ? { name: buildData.switch_name, id: buildData.switch_id } : null,
+                keycap: buildData.keycap_name ? { name: buildData.keycap_name, id: buildData.keycap_id } : null
+            };
+
+            // ЖДЕМ ЗАГРУЗКУ 3D И КРАСИМ
             setTimeout(() => {
                 if (window.applyCurrentColors) window.applyCurrentColors();
                 
@@ -998,7 +1012,6 @@
                     window.keyboardModel.traverse((child) => {
                         if (child.isMesh && savedColors[child.name]) {
                             const params = savedColors[child.name];
-                            
                             child.userData.isCustomPainted = true;
                             child.material = child.material.clone();
                             child.material.map = null;
@@ -1016,6 +1029,7 @@
                 
             }, 800); 
         }
+
         // применяет текущие цвета ко всей 3D-модели
         
         window.applyCurrentColors = function() {
