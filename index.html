@@ -339,8 +339,7 @@
             .menu-wrapper.active { left: 0; } 
             
             nav { flex-direction: column; width: 100%; gap: 18px; font-size: 16px; margin-bottom: 30px; align-items: flex-start; }
-            .user-actions { flex-direction: column; width: 100%; align-items: flex-start; gap: 20px; }
-            #user-panel { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .user-actions { flex-direction: column; width: 100%; align-items: flex-start; gap: 20px; margin-top: auto; }            #user-panel { flex-direction: column; align-items: flex-start; gap: 15px; }
             #user-panel .btn-accent { padding: 8px 16px; font-size: 12px; }
 
             /*Рабочая зона и 3D-модель*/
@@ -354,6 +353,7 @@
             .tabs { 
                 justify-content: flex-start !important; 
                 overflow-x: auto; 
+                overflow-y: hidden; /* <-- ЖЕСТКО ЗАПРЕЩАЕМ ВЕРТИКАЛЬНЫЙ СКРОЛЛ */
                 white-space: nowrap; 
                 padding-bottom: 12px;
                 scrollbar-width: none; /* Скрываем ползунок */
