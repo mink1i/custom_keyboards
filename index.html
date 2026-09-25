@@ -343,10 +343,19 @@
             }
             .menu-wrapper.active { left: 0; }
             
-            nav { flex-direction: column; width: 100%; gap: 18px; font-size: 16px; margin-bottom: 30px; align-items: flex-start; flex-grow: 1; } /* Добавили flex-grow: 1, чтобы nav занял всё свободное место и вытолкнул профиль вниз */
-            .user-actions { flex-direction: column; width: 100%; align-items: flex-start; gap: 20px; margin-top: 0; padding-bottom: 20px; } /* Убрали margin-top: auto, добавили padding-bottom */            
-            #user-panel .btn-accent { padding: 8px 16px; font-size: 12px; }
-
+            nav { flex-direction: column; width: 100%; gap: 18px; font-size: 16px; margin-bottom: 30px; align-items: flex-start; flex-grow: 1; }
+            
+            /* Жестко прижимаем блок к низу */
+            .user-actions { flex-direction: column; width: 100%; align-items: flex-start; margin-top: auto !important; padding-bottom: 20px; }
+            #user-panel { width: 100%; }
+            
+            /* Выстраиваем кнопки в столбик и сдвигаем левее для визуального выравнивания */
+            .profile-buttons { 
+                flex-direction: column !important; 
+                align-items: flex-start !important; 
+                gap: 20px !important; 
+                margin-left: -12px; 
+            }
             /*Рабочая зона и 3D-модель*/
             #workspace { 
                 flex-direction: column !important; /* Строго выстраиваем блоки сверху вниз */
@@ -358,7 +367,7 @@
             .tabs { 
                 justify-content: flex-start !important; 
                 overflow-x: auto; 
-                overflow-y: hidden; /* ЖЕСТКО ЗАПРЕЩАЕМ ВЕРТИКАЛЬНЫЙ СКРОЛЛ */
+                overflow-y: hidden; /* ЗАПРЕЩАЕМ ВЕРТИКАЛЬНЫЙ СКРОЛЛ */
                 white-space: nowrap; 
                 padding-bottom: 12px;
                 scrollbar-width: none; /* Скрываем ползунок */
@@ -452,9 +461,13 @@
             <div class="user-actions">
                 <i class="fa-solid fa-user" id="login-btn" title="Вход" onclick="openModal()"></i>
                 <div id="user-panel">
-                    <span id="username-display"></span>
-                    <button class="btn-accent" onclick="showProfile()">Профиль</button>
-                    <i class="fa-solid fa-right-from-bracket" title="Выйти" onclick="logout()" style="color: #64748b; margin-left: 10px;"></i>
+                    <!-- Скрываем имя, но оставляем тег, чтобы JS продолжал работать -->
+                    <span id="username-display" style="display: none;"></span>
+                    
+                    <div class="profile-buttons" style="display: flex; align-items: center; gap: 15px;">
+                        <button class="btn-accent" onclick="showProfile()">Профиль</button>
+                        <i class="fa-solid fa-right-from-bracket" title="Выйти" onclick="logout()" style="color: #ef4444; font-size: 20px; cursor: pointer;"></i>
+                    </div>
                 </div>
             </div>
         </div>
